@@ -95,6 +95,11 @@
             {% endfor -%}
         ]
     },
+    {%- if network_adapters_supported %}
+    "NetworkAdapters": {
+        "@odata.id": {{ "/redfish/v1/Chassis/%s/NetworkAdapters"|format(identity)|tojson }}
+    },
+    {%- endif %}
     "@odata.context": "/redfish/v1/$metadata#Chassis.Chassis",
     "@odata.id": {{ "/redfish/v1/Chassis/%s"|format(identity)|string|tojson }},
     "@Redfish.Copyright": "Copyright 2014-2017 Distributed Management Task Force, Inc. (DMTF). For the full DMTF copyright policy, see http://www.dmtf.org/about/policies/copyright."

@@ -1,0 +1,28 @@
+{
+    "@odata.type": "#NetworkAdapter.v1_4_0.NetworkAdapter",
+    "@odata.id": {{ "/redfish/v1/Chassis/%s/NetworkAdapters/%s"|format(identity, adapter.id)|tojson }},
+    "Id": {{ adapter.id|tojson }},
+    "Name": {{ adapter.get('model', 'Network Adapter')|tojson }},
+    {%- if adapter.get('manufacturer') is not none %}
+    "Manufacturer": {{ adapter.get('manufacturer')|tojson }},
+    {%- endif %}
+    {%- if adapter.get('model') is not none %}
+    "Model": {{ adapter.get('model')|tojson }},
+    {%- endif %}
+    "PartNumber": {{ adapter.part_number|tojson }},
+    "SerialNumber": {{ adapter.serial_number|tojson }},
+    "Status": {
+        "State": "Enabled",
+        "Health": "OK"
+    },
+    "Controllers": [
+        {
+            "FirmwarePackageVersion": {{ adapter.firmware_version|tojson }},
+            "ControllerCapabilities": {
+                "NetworkPortCount": 1,
+                "NetworkDeviceFunctionCount": 1
+            }
+        }
+    ],
+    "@odata.context": "/redfish/v1/$metadata#NetworkAdapter.NetworkAdapter"
+}
