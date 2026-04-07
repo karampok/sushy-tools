@@ -1451,7 +1451,7 @@ class LibvirtDriver(AbstractSystemsDriver):
                 'pci_address': pci_address,
                 'part_number': part_number,
                 'serial_number': serial_number,
-                'firmware_version': '1.0.0',
+                'firmware_version': None,
             }
             adapter.update(vendor_data)
             adapters.append(adapter)
