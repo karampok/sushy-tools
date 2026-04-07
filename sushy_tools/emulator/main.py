@@ -297,12 +297,21 @@ def chassis_resource(identity):
             managers = app.managers.managers
             storage = app.storage.get_all_storage()
             drives = app.drives.get_all_drives()
+            if systems:
+                try:
+                    app.systems.get_network_adapters(systems[0])
+                    network_adapters_supported = True
+                except error.NotSupportedError:
+                    network_adapters_supported = False
+            else:
+                network_adapters_supported = False
 
         else:
             systems = []
             managers = []
             storage = []
             drives = []
+            network_adapters_supported = False
 
         return app.render_template(
             'chassis.json',
@@ -316,7 +325,8 @@ def chassis_resource(identity):
             managers=managers[:1],
             indicator_led=app.indicators.get_indicator_state(uuid),
             storage=storage,
-            drives=drives
+            drives=drives,
+            network_adapters_supported=network_adapters_supported
         )
 
     elif flask.request.method == 'PATCH':
@@ -330,6 +340,56 @@ def chassis_resource(identity):
                         indicator_led_state, identity)
 
         return '', 204
+
+
+@app.route('/redfish/v1/Chassis/<identity>/NetworkAdapters',
+           methods=['GET'])
+@api_utils.returns_json
+def chassis_network_adapters_collection(identity):
+    if app.feature_set != 'full':
+        raise error.FeatureNotAvailable('Chassis')
+
+    chassis = app.chassis
+    uuid = chassis.uuid(identity)
+
+    if uuid == chassis.chassis[0]:
+        systems = app.systems.systems
+        adapters = (app.systems.get_network_adapters(systems[0])
+                    if systems else [])
+    else:
+        adapters = []
+
+    return app.render_template(
+        'network_adapters_collection.json',
+        identity=identity,
+        adapters=adapters)
+
+
+@app.route('/redfish/v1/Chassis/<identity>/NetworkAdapters/<adapter_id>',
+           methods=['GET'])
+@api_utils.returns_json
+def chassis_network_adapter(identity, adapter_id):
+    if app.feature_set != 'full':
+        raise error.FeatureNotAvailable('Chassis')
+
+    chassis = app.chassis
+    uuid = chassis.uuid(identity)
+
+    if uuid == chassis.chassis[0]:
+        systems = app.systems.systems
+        adapters = (app.systems.get_network_adapters(systems[0])
+                    if systems else [])
+    else:
+        adapters = []
+
+    for adapter in adapters:
+        if adapter['id'] == adapter_id:
+            return app.render_template(
+                'network_adapter.json',
+                identity=identity,
+                adapter=adapter)
+
+    raise error.NotFound()
 
 
 @app.route('/redfish/v1/Chassis/<identity>/Thermal', methods=['GET'])

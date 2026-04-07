@@ -1772,3 +1772,166 @@ class LibvirtDriverTestCase(base.BaseTestCase):
         self.assertEqual('secure-boot', secure_boot[0].get('name'))
         self.assertEqual('no', secure_boot[0].get('enabled'))
         conn_mock.defineXML.assert_called_once_with(mock.ANY)
+
+    @mock.patch('libvirt.openReadOnly', autospec=True)
+    def test_get_network_adapters(self, libvirt_mock):
+        with open('sushy_tools/tests/unit/emulator/'
+                  'domain_network_adapters.xml') as f:
+            domain_xml = f.read()
+
+        conn_mock = libvirt_mock.return_value
+        domain_mock = conn_mock.lookupByUUID.return_value
+        domain_mock.XMLDesc.return_value = domain_xml
+
+        adapters = self.test_driver.get_network_adapters(self.uuid)
+
+        self.assertEqual(3, len(adapters))
+
+        # First adapter: virtio at 0000:03:00.0
+        self.assertEqual('00000300', adapters[0]['id'])
+        self.assertEqual('52:54:00:4e:5d:37', adapters[0]['mac'])
+        self.assertEqual('0000:03:00.0', adapters[0]['pci_address'])
+        self.assertEqual('Red Hat, Inc.', adapters[0]['manufacturer'])
+        self.assertEqual('Virtio 1.0', adapters[0]['model'])
+        self.assertEqual('0x1af4', adapters[0]['vendor_id'])
+        self.assertEqual('0x1000', adapters[0]['device_id'])
+        self.assertEqual('PN-VIRTIO-03', adapters[0]['part_number'])
+        self.assertEqual('SN-4E5D3700', adapters[0]['serial_number'])
+        self.assertEqual('1.0.0', adapters[0]['firmware_version'])
+
+        # Second adapter: e1000 at 0000:04:00.0
+        self.assertEqual('00000400', adapters[1]['id'])
+        self.assertEqual('52:54:00:9a:b2:c3', adapters[1]['mac'])
+        self.assertEqual('0000:04:00.0', adapters[1]['pci_address'])
+        self.assertEqual('Intel Corporation', adapters[1]['manufacturer'])
+        self.assertEqual('Intel PRO/1000 MT', adapters[1]['model'])
+        self.assertEqual('0x8086', adapters[1]['vendor_id'])
+        self.assertEqual('0x100e', adapters[1]['device_id'])
+        self.assertEqual('PN-E1000-04', adapters[1]['part_number'])
+        self.assertEqual('SN-9AB2C300', adapters[1]['serial_number'])
+        self.assertEqual('1.0.0', adapters[1]['firmware_version'])
+
+        # Third adapter: rtl8139 at 0000:05:00.0
+        self.assertEqual('00000500', adapters[2]['id'])
+        self.assertEqual('52:54:00:d4:e5:f6', adapters[2]['mac'])
+        self.assertEqual('0000:05:00.0', adapters[2]['pci_address'])
+        self.assertEqual('Realtek Semiconductor', adapters[2]['manufacturer'])
+        self.assertEqual('RTL8139', adapters[2]['model'])
+        self.assertEqual('0x10ec', adapters[2]['vendor_id'])
+        self.assertEqual('0x8139', adapters[2]['device_id'])
+        self.assertEqual('PN-RTL8139-05', adapters[2]['part_number'])
+        self.assertEqual('SN-D4E5F600', adapters[2]['serial_number'])
+        self.assertEqual('1.0.0', adapters[2]['firmware_version'])
+
+    @mock.patch('libvirt.openReadOnly', autospec=True)
+    def test_get_network_adapters_empty(self, libvirt_mock):
+        with open('sushy_tools/tests/unit/emulator/domain.xml') as f:
+            domain_xml = f.read()
+
+        conn_mock = libvirt_mock.return_value
+        domain_mock = conn_mock.lookupByUUID.return_value
+        domain_mock.XMLDesc.return_value = domain_xml
+
+        adapters = self.test_driver.get_network_adapters(self.uuid)
+
+        self.assertEqual([], adapters)
+
+    @mock.patch('libvirt.openReadOnly', autospec=True)
+    def test_get_network_adapters_sorting(self, libvirt_mock):
+        with open('sushy_tools/tests/unit/emulator/'
+                  'domain_nics.xml') as f:
+            domain_xml = f.read()
+
+        conn_mock = libvirt_mock.return_value
+        domain_mock = conn_mock.lookupByUUID.return_value
+        domain_mock.XMLDesc.return_value = domain_xml
+
+        adapters = self.test_driver.get_network_adapters(self.uuid)
+
+        # Verify sorted by PCI address: 0000:00:03.0, 0000:00:07.0, 0000:01:00.0
+        self.assertEqual(3, len(adapters))
+        self.assertEqual('0000:00:03.0', adapters[0]['pci_address'])
+        self.assertEqual('0000:00:07.0', adapters[1]['pci_address'])
+        self.assertEqual('0000:01:00.0', adapters[2]['pci_address'])
+
+    @mock.patch('libvirt.openReadOnly', autospec=True)
+    def test_get_network_adapters_unknown_model(self, libvirt_mock):
+        domain_xml = """<domain type='qemu'>
+          <name>test</name>
+          <uuid>c7a5fdbd-cdaf-9455-926a-d65c16db1809</uuid>
+          <devices>
+            <interface type='network'>
+              <mac address='52:54:00:aa:bb:cc'/>
+              <model type='unknown_model'/>
+              <address type='pci' domain='0x0000' bus='0x06' slot='0x00' function='0x0'/>
+            </interface>
+          </devices>
+        </domain>"""
+
+        conn_mock = libvirt_mock.return_value
+        domain_mock = conn_mock.lookupByUUID.return_value
+        domain_mock.XMLDesc.return_value = domain_xml
+
+        adapters = self.test_driver.get_network_adapters(self.uuid)
+
+        self.assertEqual(1, len(adapters))
+        # Unknown model should not have vendor metadata
+        self.assertNotIn('manufacturer', adapters[0])
+        self.assertNotIn('model', adapters[0])
+        self.assertNotIn('vendor_id', adapters[0])
+        self.assertNotIn('device_id', adapters[0])
+        # But should still have MAC and PCI
+        self.assertEqual('52:54:00:aa:bb:cc', adapters[0]['mac'])
+        self.assertEqual('0000:06:00.0', adapters[0]['pci_address'])
+
+    @mock.patch('libvirt.openReadOnly', autospec=True)
+    def test_get_network_adapters_no_model_defaults_virtio(self, libvirt_mock):
+        domain_xml = """<domain type='qemu'>
+          <name>test</name>
+          <uuid>c7a5fdbd-cdaf-9455-926a-d65c16db1809</uuid>
+          <devices>
+            <interface type='network'>
+              <mac address='52:54:00:11:22:33'/>
+              <address type='pci' domain='0x0000' bus='0x07' slot='0x00' function='0x0'/>
+            </interface>
+          </devices>
+        </domain>"""
+
+        conn_mock = libvirt_mock.return_value
+        domain_mock = conn_mock.lookupByUUID.return_value
+        domain_mock.XMLDesc.return_value = domain_xml
+
+        adapters = self.test_driver.get_network_adapters(self.uuid)
+
+        self.assertEqual(1, len(adapters))
+        # No model specified should default to virtio
+        self.assertEqual('Red Hat, Inc.', adapters[0]['manufacturer'])
+        self.assertEqual('Virtio 1.0', adapters[0]['model'])
+        self.assertEqual('0x1af4', adapters[0]['vendor_id'])
+
+    @mock.patch('libvirt.openReadOnly', autospec=True)
+    def test_get_network_adapters_no_pci_address(self, libvirt_mock):
+        domain_xml = """<domain type='qemu'>
+          <name>test</name>
+          <uuid>c7a5fdbd-cdaf-9455-926a-d65c16db1809</uuid>
+          <devices>
+            <interface type='user'>
+              <mac address='52:54:00:44:55:66'/>
+              <model type='virtio'/>
+            </interface>
+          </devices>
+        </domain>"""
+
+        conn_mock = libvirt_mock.return_value
+        domain_mock = conn_mock.lookupByUUID.return_value
+        domain_mock.XMLDesc.return_value = domain_xml
+
+        adapters = self.test_driver.get_network_adapters(self.uuid)
+
+        self.assertEqual(1, len(adapters))
+        # No PCI address should use fallback ID
+        self.assertEqual('NIC00', adapters[0]['id'])
+        self.assertIsNone(adapters[0]['pci_address'])
+        # Synthetic metadata should still work
+        self.assertEqual('PN-VIRTIO-00', adapters[0]['part_number'])
+        self.assertEqual('SN-44556600', adapters[0]['serial_number'])

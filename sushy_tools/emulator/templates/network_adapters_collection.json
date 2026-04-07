@@ -1,0 +1,13 @@
+{
+    "@odata.type": "#NetworkAdapterCollection.NetworkAdapterCollection",
+    "@odata.id": {{ "/redfish/v1/Chassis/%s/NetworkAdapters"|format(identity)|tojson }},
+    "Name": "Network Adapter Collection",
+    "Members@odata.count": {{ adapters|length }},
+    "Members": [
+        {%- for adapter in adapters %}
+        {"@odata.id": {{ "/redfish/v1/Chassis/%s/NetworkAdapters/%s"|format(identity, adapter.id)|tojson }}}
+        {%- if not loop.last %},{% endif %}
+        {%- endfor %}
+    ],
+    "@odata.context": "/redfish/v1/$metadata#NetworkAdapterCollection.NetworkAdapterCollection"
+}

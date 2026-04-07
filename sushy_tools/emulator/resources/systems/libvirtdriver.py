@@ -46,6 +46,28 @@ FirmwareProcessResult = namedtuple('FirmwareProcessResult',
                                     'firmware_versions'])
 
 
+NETWORK_ADAPTER_VENDORS = {
+    'virtio': {
+        'vendor_id': '0x1af4',
+        'device_id': '0x1000',
+        'manufacturer': 'Red Hat, Inc.',
+        'model': 'Virtio 1.0',
+    },
+    'e1000': {
+        'vendor_id': '0x8086',
+        'device_id': '0x100e',
+        'manufacturer': 'Intel Corporation',
+        'model': 'Intel PRO/1000 MT',
+    },
+    'rtl8139': {
+        'vendor_id': '0x10ec',
+        'device_id': '0x8139',
+        'manufacturer': 'Realtek Semiconductor',
+        'model': 'RTL8139',
+    },
+}
+
+
 class libvirt_open(object):
 
     def __init__(self, uri, readonly=False):
@@ -1377,6 +1399,65 @@ class LibvirtDriver(AbstractSystemsDriver):
         return [{'id': iface.get('address'), 'mac': iface.get('address')}
                 for iface in tree.findall(
                 ".//devices/interface/mac")]
+
+    def get_network_adapters(self, identity):
+        """Get network adapters with PCI address and vendor metadata
+
+        :param identity: libvirt domain name or ID
+        :returns: list of network adapter dicts sorted by PCI address
+        """
+        domain = self._get_domain(identity, readonly=True)
+        tree = ET.fromstring(domain.XMLDesc(libvirt.VIR_DOMAIN_XML_INACTIVE))
+
+        adapters = []
+        for iface in tree.findall('.//devices/interface'):
+            mac_elem = iface.find('mac')
+            if mac_elem is None:
+                continue
+
+            mac = mac_elem.get('address')
+            model_elem = iface.find('model')
+            model_type = (model_elem.get('type')
+                          if model_elem is not None else 'virtio')
+
+            addr_elem = iface.find('address[@type="pci"]')
+            if addr_elem is None:
+                addr_elem = iface.find('source/address[@type="pci"]')
+            if addr_elem is not None:
+                domain_num = int(addr_elem.get('domain', '0x0000'), 16)
+                bus_num = int(addr_elem.get('bus', '0x00'), 16)
+                slot_num = int(addr_elem.get('slot', '0x00'), 16)
+                func_num = int(addr_elem.get('function', '0x0'), 16)
+                pci_address = '{:04x}:{:02x}:{:02x}.{:01x}'.format(
+                    domain_num, bus_num, slot_num, func_num)
+                adapter_id = '{:04x}{:02x}{:02x}'.format(
+                    domain_num, bus_num, slot_num)
+            else:
+                pci_address = None
+                bus_num = 0
+                adapter_id = 'NIC{:02d}'.format(len(adapters))
+
+            mac_nocolon = mac.replace(':', '')
+            serial_number = 'SN-{:s}00'.format(mac_nocolon[-6:].upper())
+            part_number = 'PN-{:s}-{:02X}'.format(
+                model_type.upper(), bus_num)
+
+            vendor_data = NETWORK_ADAPTER_VENDORS.get(model_type, {})
+
+            adapter = {
+                'id': adapter_id,
+                'mac': mac,
+                'model_type': model_type,
+                'pci_address': pci_address,
+                'part_number': part_number,
+                'serial_number': serial_number,
+                'firmware_version': '1.0.0',
+            }
+            adapter.update(vendor_data)
+            adapters.append(adapter)
+
+        adapters.sort(key=lambda a: a.get('pci_address') or '')
+        return adapters
 
     def get_processors(self, identity):
         """Get list of processors

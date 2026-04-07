@@ -262,6 +262,14 @@ class AbstractSystemsDriver(metaclass=abc.ABCMeta):
         """
         raise error.NotSupportedError('Not implemented')
 
+    def get_network_adapters(self, identity):
+        """Get network adapters with PCI address and vendor metadata
+
+        :param identity: system identity
+        :returns: list of network adapter dictionaries
+        """
+        raise error.NotSupportedError('Not implemented')
+
     def get_boot_image(self, identity, device):
         """Get backend VM boot image info
 
