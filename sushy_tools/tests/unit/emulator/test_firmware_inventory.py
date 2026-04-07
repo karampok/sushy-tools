@@ -76,6 +76,36 @@ class FirmwareInventoryTestCase(test_main.EmulatorTestCase):
 
         self.assertEqual(404, response.status_code)
 
+    def test_firmware_inventory_member_fallback_when_nics_unavailable(
+            self, systems_mock):
+        # Simulate VM mid-reboot: systems list is non-empty but get_nics raises
+        m = systems_mock.return_value
+        m.systems = ['test-vm']
+        m.get_nics.side_effect = Exception('domain is shutting down')
+        main.app.config['SUSHY_EMULATOR_NIC_FIRMWARE_VERSION'] = '1.0.2'
+        self.addCleanup(
+            lambda: main.app.config.pop(
+                'SUSHY_EMULATOR_NIC_FIRMWARE_VERSION', None))
+
+        response = self.app.get(
+            '/redfish/v1/UpdateService/FirmwareInventory/'
+            'nic-52-54-00-4e-5d-37')
+
+        self.assertEqual(200, response.status_code)
+        self.assertEqual('nic-52-54-00-4e-5d-37', response.json['Id'])
+        self.assertEqual('nic:52:54:00:4e:5d:37', response.json['Name'])
+        self.assertEqual('1.0.2', response.json['Version'])
+
+    def test_firmware_inventory_member_invalid_id_still_404(
+            self, systems_mock):
+        # Non-NIC member IDs (e.g. BIOS) must still return 404
+        self._setup_mocks(systems_mock)
+
+        response = self.app.get(
+            '/redfish/v1/UpdateService/FirmwareInventory/BIOS.Default.1')
+
+        self.assertEqual(404, response.status_code)
+
     def test_firmware_inventory_version_configurable(self, systems_mock):
         self._setup_mocks(systems_mock, nics=[
             {'id': '52:54:00:4e:5d:37', 'mac': '52:54:00:4e:5d:37'},

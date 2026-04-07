@@ -1145,6 +1145,16 @@ def simple_task():
     return app.render_template('task.json')
 
 
+@app.route('/redfish/v1/TaskService/Tasks/<task_id>',
+           methods=['GET'])
+@api_utils.returns_json
+def task_resource(task_id):
+    task = usctl._tasks.get(task_id)
+    if task is None:
+        raise error.NotFound()
+    return app.render_template('task_dynamic.json', task=task)
+
+
 def cleanup_zombies(signum, frame):
     """Signal handler for SIGCHLD that reaps all terminated children."""
     while True:

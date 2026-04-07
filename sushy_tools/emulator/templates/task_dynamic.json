@@ -1,0 +1,11 @@
+{
+    "@odata.type": "#Task.v1_4_3.Task",
+    "@odata.id": {{ ("/redfish/v1/TaskService/Tasks/" + task.Id)|tojson }},
+    "Id": {{ task.Id|tojson }},
+    "Name": "Firmware Update Task",
+    "TaskState": {{ task.TaskState|tojson }},
+    "TaskStatus": {{ task.TaskStatus|tojson }},
+    "PercentComplete": {{ 100 if task.TaskState == "Completed" else 50 }},
+    "Messages": {{ task.Messages|tojson }},
+    "@odata.context": "/redfish/v1/$metadata#Task.Task"
+}

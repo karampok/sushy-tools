@@ -1,0 +1,23 @@
+---
+features:
+  - |
+    Extends UpdateService.SimpleUpdate to handle NIC firmware targets.
+    Accepted target formats are ``FirmwareInventory/nic-*`` and
+    ``Chassis/.../NetworkAdapters/*`` (the latter matches what Ironic sends
+    when resolving a specific adapter via ``_resolve_nic_target``).
+    A POST with a NIC target (or no targets) returns 202 with a ``Location``
+    header pointing to a TaskService task. A background thread simulates the
+    flash, reboots the VM via GracefulRestart, and marks the task Completed
+    once the system returns to power-on state.
+  - |
+    Adds per-model NIC firmware versioning. The firmware version config key
+    can be scoped to a specific NIC model type: e.g.
+    ``SUSHY_EMULATOR_NIC_FIRMWARE_VERSION_VIRTIO`` for virtio NICs,
+    ``SUSHY_EMULATOR_NIC_FIRMWARE_VERSION_E1000E`` for e1000e NICs.
+    Model type is detected from the ``ImageURI`` filename or the
+    ``Content-Disposition`` header of the downloaded firmware image.
+    Falls back to the global ``SUSHY_EMULATOR_NIC_FIRMWARE_VERSION`` key.
+  - |
+    Adds GET /redfish/v1/TaskService/Tasks/{task_id} endpoint to expose
+    task state (``Running`` / ``Completed``) and progress for NIC firmware
+    update operations.
