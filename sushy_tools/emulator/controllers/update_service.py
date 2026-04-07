@@ -31,6 +31,63 @@ def update_service_resource():
     )
 
 
+@update_service.route('/FirmwareInventory', methods=['GET'])
+@api_utils.returns_json
+def firmware_inventory_collection():
+    api_utils.debug('Serving firmware inventory collection')
+
+    nic_firmware_version = flask.current_app.config.get(
+        'SUSHY_EMULATOR_NIC_FIRMWARE_VERSION', '1.0.0')
+
+    members = []
+    seen_macs = set()
+    for system in flask.current_app.systems.systems:
+        try:
+            nics = flask.current_app.systems.get_nics(system)
+        except Exception as exc:
+            api_utils.warning(
+                'Failed to get NICs for system "%s": %s', system, exc)
+            continue
+        for nic in nics:
+            mac = nic['id']
+            if mac in seen_macs:
+                continue
+            seen_macs.add(mac)
+            members.append({
+                'id': 'nic-' + mac.replace(':', '-'),
+                'name': 'nic:' + mac,
+                'version': nic_firmware_version,
+            })
+
+    return flask.render_template(
+        'firmware_inventory.json',
+        members=members)
+
+
+@update_service.route('/FirmwareInventory/<member_id>', methods=['GET'])
+@api_utils.returns_json
+def firmware_inventory_member(member_id):
+    api_utils.debug('Serving firmware inventory member "%s"', member_id)
+
+    nic_firmware_version = flask.current_app.config.get(
+        'SUSHY_EMULATOR_NIC_FIRMWARE_VERSION', '1.0.0')
+
+    for system in flask.current_app.systems.systems:
+        for nic in flask.current_app.systems.get_nics(system):
+            mac = nic['id']
+            if 'nic-' + mac.replace(':', '-') == member_id:
+                member = {
+                    'id': member_id,
+                    'name': 'nic:' + mac,
+                    'version': nic_firmware_version,
+                }
+                return flask.render_template(
+                    'firmware_inventory_member.json',
+                    member=member)
+
+    raise error.NotFound()
+
+
 @update_service.route('/Actions/UpdateService.SimpleUpdate',
                       methods=['POST'])
 @api_utils.returns_json

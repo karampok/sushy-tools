@@ -1,0 +1,13 @@
+{
+    "@odata.type": "#SoftwareInventoryCollection.SoftwareInventoryCollection",
+    "@odata.id": "/redfish/v1/UpdateService/FirmwareInventory",
+    "Name": "Firmware Inventory Collection",
+    "Members@odata.count": {{ members|length }},
+    "Members": [
+        {%- for member in members %}
+        {"@odata.id": {{ "/redfish/v1/UpdateService/FirmwareInventory/%s"|format(member.id)|tojson }}}
+        {%- if not loop.last %},{% endif %}
+        {%- endfor %}
+    ],
+    "@odata.context": "/redfish/v1/$metadata#SoftwareInventoryCollection.SoftwareInventoryCollection"
+}

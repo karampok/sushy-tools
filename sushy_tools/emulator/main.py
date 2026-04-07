@@ -359,6 +359,10 @@ def chassis_network_adapters_collection(identity):
     else:
         adapters = []
 
+    for adapter in adapters:
+        adapter['firmware_version'] = usctl._get_nic_version(
+            app, adapter.get('model_type'))
+
     return app.render_template(
         'network_adapters_collection.json',
         identity=identity,
@@ -384,6 +388,8 @@ def chassis_network_adapter(identity, adapter_id):
 
     for adapter in adapters:
         if adapter['id'] == adapter_id:
+            adapter['firmware_version'] = usctl._get_nic_version(
+                app, adapter.get('model_type'))
             return app.render_template(
                 'network_adapter.json',
                 identity=identity,
@@ -747,10 +753,14 @@ def ethernet_interface(identity, nic_id):
 
     nics = app.systems.get_nics(identity)
 
+    firmware_version = app.config.get(
+        'SUSHY_EMULATOR_NIC_FIRMWARE_VERSION', '1.0.0')
+
     for nic in nics:
         if nic['id'] == nic_id:
             return app.render_template(
-                'ethernet_interface.json', identity=identity, nic=nic)
+                'ethernet_interface.json', identity=identity, nic=nic,
+                firmware_version=firmware_version)
 
     raise error.NotFound()
 

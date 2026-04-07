@@ -11,6 +11,7 @@
 #    under the License.
 
 from sushy_tools import error
+from sushy_tools.emulator import main
 from sushy_tools.tests.unit.emulator import test_main
 
 
@@ -108,6 +109,41 @@ class NetworkAdaptersTestCase(test_main.EmulatorTestCase):
         self.assertEqual(
             f'/redfish/v1/Chassis/{self.chassis_id}/NetworkAdapters/00000300',
             response.json['@odata.id'])
+
+    def test_network_adapter_firmware_version_from_config(
+            self, chassis_mock, systems_mock):
+        """FirmwarePackageVersion reflects SUSHY_EMULATOR_NIC_FIRMWARE_VERSION"""
+        chassis_mock = chassis_mock.return_value
+        chassis_mock.uuid.return_value = self.chassis_id
+        chassis_mock.chassis = [self.chassis_id]
+
+        systems_mock = systems_mock.return_value
+        systems_mock.systems = ['test-vm']
+        systems_mock.get_network_adapters.return_value = [
+            {
+                'id': '00000300',
+                'mac': '52:54:00:4e:5d:37',
+                'pci_address': '0000:03:00.0',
+                'manufacturer': 'Red Hat, Inc.',
+                'model': 'Virtio 1.0',
+                'part_number': 'PN-VIRTIO-03',
+                'serial_number': 'SN-4E5D3700',
+                'firmware_version': None,
+            }
+        ]
+        main.app.config['SUSHY_EMULATOR_NIC_FIRMWARE_VERSION'] = '2.3.1'
+        self.addCleanup(
+            lambda: main.app.config.pop(
+                'SUSHY_EMULATOR_NIC_FIRMWARE_VERSION', None))
+
+        response = self.app.get(
+            f'/redfish/v1/Chassis/{self.chassis_id}/NetworkAdapters/00000300'
+        )
+
+        self.assertEqual(200, response.status_code)
+        self.assertEqual(
+            '2.3.1',
+            response.json['Controllers'][0]['FirmwarePackageVersion'])
 
     def test_network_adapter_not_found(self, chassis_mock, systems_mock):
         """Test GET /Chassis/{id}/NetworkAdapters/{invalid_id} returns 404"""

@@ -1797,7 +1797,7 @@ class LibvirtDriverTestCase(base.BaseTestCase):
         self.assertEqual('0x1000', adapters[0]['device_id'])
         self.assertEqual('PN-VIRTIO-03', adapters[0]['part_number'])
         self.assertEqual('SN-4E5D3700', adapters[0]['serial_number'])
-        self.assertEqual('1.0.0', adapters[0]['firmware_version'])
+        self.assertIsNone(adapters[0]['firmware_version'])
 
         # Second adapter: e1000 at 0000:04:00.0
         self.assertEqual('00000400', adapters[1]['id'])
@@ -1809,7 +1809,7 @@ class LibvirtDriverTestCase(base.BaseTestCase):
         self.assertEqual('0x100e', adapters[1]['device_id'])
         self.assertEqual('PN-E1000-04', adapters[1]['part_number'])
         self.assertEqual('SN-9AB2C300', adapters[1]['serial_number'])
-        self.assertEqual('1.0.0', adapters[1]['firmware_version'])
+        self.assertIsNone(adapters[1]['firmware_version'])
 
         # Third adapter: rtl8139 at 0000:05:00.0
         self.assertEqual('00000500', adapters[2]['id'])
@@ -1821,7 +1821,7 @@ class LibvirtDriverTestCase(base.BaseTestCase):
         self.assertEqual('0x8139', adapters[2]['device_id'])
         self.assertEqual('PN-RTL8139-05', adapters[2]['part_number'])
         self.assertEqual('SN-D4E5F600', adapters[2]['serial_number'])
-        self.assertEqual('1.0.0', adapters[2]['firmware_version'])
+        self.assertIsNone(adapters[2]['firmware_version'])
 
     @mock.patch('libvirt.openReadOnly', autospec=True)
     def test_get_network_adapters_empty(self, libvirt_mock):

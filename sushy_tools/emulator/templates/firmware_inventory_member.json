@@ -1,0 +1,13 @@
+{
+    "@odata.type": "#SoftwareInventory.v1_2_0.SoftwareInventory",
+    "@odata.id": {{ "/redfish/v1/UpdateService/FirmwareInventory/%s"|format(member.id)|tojson }},
+    "Id": {{ member.id|tojson }},
+    "Name": {{ member.name|tojson }},
+    "Version": {{ member.version|tojson }},
+    "Status": {
+        "State": "Enabled",
+        "Health": "OK"
+    },
+    "Updateable": false,
+    "@odata.context": "/redfish/v1/$metadata#SoftwareInventory.SoftwareInventory"
+}

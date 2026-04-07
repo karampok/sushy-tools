@@ -8,6 +8,7 @@
     },
     "PermanentMACAddress": {{ nic['mac']|string|tojson }},
     "MACAddress": {{ nic['mac']|string|tojson }},
+    "FirmwareVersion": {{ firmware_version|tojson }},
     "@odata.context": "/redfish/v1/$metadata#EthernetInterface.EthernetInterface",
     "@odata.id": {{ "/redfish/v1/Systems/%s/EthernetInterfaces/%s"|format(identity, nic['id'])|tojson }}
 }

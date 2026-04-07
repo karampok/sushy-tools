@@ -1,0 +1,22 @@
+---
+features:
+  - |
+    Adds GET /redfish/v1/UpdateService/FirmwareInventory and
+    GET /redfish/v1/UpdateService/FirmwareInventory/{id} endpoints.
+    The inventory exposes one entry per NIC discovered from each system,
+    using the name pattern ``nic:{mac}``. The firmware version defaults
+    to ``1.0.0`` and is configurable via ``SUSHY_EMULATOR_NIC_FIRMWARE_VERSION``
+    in the emulator config file.
+  - |
+    EthernetInterface responses now include a ``FirmwareVersion`` field
+    matching the value from ``SUSHY_EMULATOR_NIC_FIRMWARE_VERSION``
+    (default ``1.0.0``). This allows Ironic inspection to report NIC
+    firmware versions and populate metal3 HostFirmwareComponents with
+    ``nic:`` entries.
+  - |
+    Adds GET /redfish/v1/Chassis/{id}/NetworkAdapters collection and
+    GET /redfish/v1/Chassis/{id}/NetworkAdapters/{adapter_id} endpoints
+    for the libvirt driver. Returns PCI address, vendor metadata
+    (manufacturer, model, part number, serial number), and firmware
+    version for each NIC. The NetworkAdapters link is conditionally
+    shown in the Chassis resource only when the driver supports it.
