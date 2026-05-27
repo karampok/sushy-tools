@@ -164,8 +164,8 @@ def _do_nic_update(app, task_id, image_uri, version, system_identity,
 
         config_key = _nic_firmware_key(model_type)
         if rebooted:
-            for _ in range(30):
-                time.sleep(10)
+            for _ in range(12):
+                time.sleep(5)
                 try:
                     if app.systems.get_power_state(system_identity) == 'On':
                         app.config[config_key] = version
