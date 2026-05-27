@@ -1,0 +1,28 @@
+{
+  "error": {
+    "@Message.ExtendedInfo": [
+      {
+        "Message": "The requested operation cannot be completed because of an internal error.",
+        "MessageArgs": [],
+        "MessageArgs@odata.count": 0,
+        "MessageId": "IDRAC.2.8.SYS446",
+        "RelatedProperties": [],
+        "RelatedProperties@odata.count": 0,
+        "Resolution": "Retry the operation after a few minutes. If the issue persists, contact your service provider.",
+        "Severity": "Critical"
+      },
+      {
+        "Message": "The request failed due to an internal service error.  The service is still operational.",
+        "MessageArgs": [],
+        "MessageArgs@odata.count": 0,
+        "MessageId": "Base.1.12.InternalError",
+        "RelatedProperties": [],
+        "RelatedProperties@odata.count": 0,
+        "Resolution": "Resubmit the request.  If the problem persists, consider resetting the service.",
+        "Severity": "Critical"
+      }
+    ],
+    "code": "Base.1.12.GeneralError",
+    "message": "A general error has occurred. See ExtendedInfo for more information"
+  }
+}

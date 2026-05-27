@@ -1,0 +1,88 @@
+{
+  "@odata.context": "/redfish/v1/$metadata#NetworkAdapter.NetworkAdapter",
+  "@odata.id": "/redfish/v1/Chassis/System.Embedded.1/NetworkAdapters/NIC.Slot.3",
+  "@odata.type": "#NetworkAdapter.v1_9_0.NetworkAdapter",
+  "Assembly": {
+    "@odata.id": "/redfish/v1/Chassis/System.Embedded.1/NetworkAdapters/NIC.Slot.3/Assembly"
+  },
+  "Controllers": [
+    {
+      "ControllerCapabilities": {
+        "DataCenterBridging": {
+          "Capable": true
+        },
+        "NPAR": {
+          "NparCapable": true,
+          "NparEnabled": false
+        },
+        "NPIV": {
+          "MaxDeviceLogins": 0,
+          "MaxPortLogins": 0
+        },
+        "NetworkDeviceFunctionCount": 2,
+        "NetworkPortCount": 2,
+        "VirtualizationOffload": {
+          "SRIOV": {
+            "SRIOVVEPACapable": true
+          },
+          "VirtualFunction": {
+            "DeviceMaxCount": 256,
+            "MinAssignmentGroupSize": 64,
+            "NetworkPortMaxCount": 128
+          }
+        }
+      },
+      "FirmwarePackageVersion": "22.5.7",
+      "Links": {
+        "NetworkDeviceFunctions": [
+          {
+            "@odata.id": "/redfish/v1/Chassis/System.Embedded.1/NetworkAdapters/NIC.Slot.3/NetworkDeviceFunctions/NIC.Slot.3-2-1"
+          },
+          {
+            "@odata.id": "/redfish/v1/Chassis/System.Embedded.1/NetworkAdapters/NIC.Slot.3/NetworkDeviceFunctions/NIC.Slot.3-1-1"
+          }
+        ],
+        "NetworkDeviceFunctions@odata.count": 2,
+        "NetworkPorts": [
+          {
+            "@odata.id": "/redfish/v1/Chassis/System.Embedded.1/NetworkAdapters/NIC.Slot.3/NetworkPorts/NIC.Slot.3-2"
+          },
+          {
+            "@odata.id": "/redfish/v1/Chassis/System.Embedded.1/NetworkAdapters/NIC.Slot.3/NetworkPorts/NIC.Slot.3-1"
+          }
+        ],
+        "NetworkPorts@odata.count": 2,
+        "Oem": {
+          "Dell": {
+            "@odata.type": "#DellOem.v1_3_0.DellOemLinks",
+            "CPUAffinity": [],
+            "CPUAffinity@odata.count": 0
+          }
+        }
+      }
+    }
+  ],
+  "Controllers@odata.count": 1,
+  "Description": "Network Adapter View",
+  "Id": "NIC.Slot.3",
+  "Manufacturer": "Intel Corporation",
+  "Model": "Intel(R) 25GbE 2P XXV710 Adptr",
+  "Name": "Network Adapter View",
+  "NetworkDeviceFunctions": {
+    "@odata.id": "/redfish/v1/Chassis/System.Embedded.1/NetworkAdapters/NIC.Slot.3/NetworkDeviceFunctions"
+  },
+  "NetworkPorts": {
+    "@odata.id": "/redfish/v1/Chassis/System.Embedded.1/NetworkAdapters/NIC.Slot.3/NetworkPorts"
+  },
+  "NetworkPorts@Redfish.Deprecated": "Please migrate to use /redfish/v1/Chassis/System.Embedded.1/NetworkAdapters/{NetworkAdaptersId}/Ports",
+  "Ports": {
+    "@odata.id": "/redfish/v1/Chassis/System.Embedded.1/NetworkAdapters/NIC.Slot.3/Ports"
+  },
+  "PartNumber": "0HN7J7",
+  "SerialNumber": "MYFLMIT0C400T9",
+  "Status": {
+    "Health": "OK",
+    "HealthRollup": "OK",
+    "State": "Enabled"
+  }
+}
