@@ -1,0 +1,122 @@
+{
+  "@odata.etag": "W/\"61E9679B\"",
+  "@odata.id": "/redfish/v1/Chassis/1/NetworkAdapters/DE080000/Ports/0",
+  "@odata.type": "#Port.v1_10_0.Port",
+  "@odata.context": "/redfish/v1/$metadata#Port.Port",
+  "Id": "0",
+  "@Redfish.Settings": {
+    "SettingsObject": {
+      "@odata.id": "/redfish/v1/Chassis/1/NetworkAdapters/DE080000/Ports/0/Settings"
+    },
+    "@odata.type": "#Settings.v1_3_3.Settings",
+    "SupportedApplyTimes": [
+      "OnReset"
+    ]
+  },
+  "Actions": {
+    "#Port.Reset": {
+      "target": "/redfish/v1/Chassis/1/NetworkAdapters/DE080000/Ports/0/Actions/Port.Reset",
+      "title": "Reset"
+    }
+  },
+  "CurrentSpeedGbps": 25.0,
+  "Ethernet": {
+    "FlowControlConfiguration": "None",
+    "FlowControlStatus": "None",
+    "AssociatedMACAddresses": [
+      "50:7C:6F:4B:9A:28"
+    ],
+    "EEEEnabled": false,
+    "WakeOnLANEnabled": false,
+    "SupportedEthernetCapabilities": [],
+    "LLDPEnabled": false,
+    "LLDPReceive": {
+      "ChassisId": "",
+      "ChassisIdSubtype": "NotTransmitted",
+      "ManagementAddressIPv4": "",
+      "ManagementAddressIPv6": "",
+      "ManagementAddressMAC": "",
+      "ManagementVlanId": 4095,
+      "PortId": "",
+      "PortIdSubtype": "NotTransmitted",
+      "SystemName": ""
+    },
+    "LLDPTransmit": {
+      "ChassisId": "",
+      "ChassisIdSubtype": "NotTransmitted",
+      "ManagementAddressIPv4": "",
+      "ManagementAddressIPv6": "",
+      "ManagementAddressMAC": "",
+      "ManagementVlanId": 4095,
+      "PortId": "",
+      "PortIdSubtype": "NotTransmitted"
+    }
+  },
+  "InterfaceEnabled": true,
+  "LinkConfiguration": [
+    {
+      "AutoSpeedNegotiationCapable": true,
+      "AutoSpeedNegotiationEnabled": false,
+      "CapableLinkSpeedGbps": [
+        1.0,
+        10.0,
+        25.0
+      ],
+      "ConfiguredNetworkLinks": [
+        {
+          "ConfiguredLinkSpeedGbps": 25.0
+        }
+      ]
+    }
+  ],
+  "LinkNetworkTechnology": "Ethernet",
+  "LinkState": "Enabled",
+  "LinkStatus": "LinkUp",
+  "MaxFrameSize": 9728,
+  "LinkTransitionIndicator": 3,
+  "MaxSpeedGbps": 25.0,
+  "Name": "E810 Port Current Setting",
+  "PortId": "1",
+  "PortType": "BidirectionalPort",
+  "Metrics": {
+    "@odata.id": "/redfish/v1/Chassis/1/NetworkAdapters/DE080000/Ports/0/Metrics"
+  },
+  "Status": {
+    "State": "Enabled",
+    "HealthRollup": "OK"
+  },
+  "PortMedium": "Optical",
+  "FunctionMaxBandwidth": [
+    {
+      "AllocationPercent": 100,
+      "NetworkDeviceFunction": {
+        "@odata.id": "/redfish/v1/Chassis/1/NetworkAdapters/DE080000/NetworkDeviceFunctions/0"
+      }
+    }
+  ],
+  "FunctionMinBandwidth": [
+    {
+      "AllocationPercent": 100,
+      "NetworkDeviceFunction": {
+        "@odata.id": "/redfish/v1/Chassis/1/NetworkAdapters/DE080000/NetworkDeviceFunctions/0"
+      }
+    }
+  ],
+  "SFP": {
+    "FiberConnectionType": "MultiMode",
+    "Manufacturer": "DELL-T1NEXUS",
+    "MediumType": "FiberOptic",
+    "PartNumber": "T1-AOC-25GA-2M",
+    "SerialNumber": "T1A293001",
+    "Status": {
+      "Health": "OK",
+      "State": "Enabled"
+    },
+    "SupportedSFPTypes": [
+      "SFP",
+      "SFPPlus",
+      "SFP28"
+    ],
+    "Type": "SFP28"
+  }
+}

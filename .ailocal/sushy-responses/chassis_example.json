@@ -1,0 +1,123 @@
+{
+    "@odata.type": "#Chassis.v1_5_0.Chassis",
+    "Id": "48295861-2522-3561-6729-621118518810",
+    "Name": "Chassis",
+    "UUID": "48295861-2522-3561-6729-621118518810",
+    "AssetTag": "Chicago-45Z-2381",
+    "ChassisType": "Enclosure",
+    "Manufacturer": "Contoso",
+    "Model": "3500RX",
+    "SKU": "8675309",
+    "SerialNumber": "437XR1138R2",
+    "PartNumber": "224071-J23",
+    "PowerState": "On",
+    "IndicatorLED": "Lit",
+    "HeightMm": 44.45,
+    "WidthMm": 431.8,
+    "DepthMm": 711,
+    "WeightKg": 15.31,
+    "Thermal": {
+        "@odata.id": "/redfish/v1/Chassis/48295861-2522-3561-6729-621118518810/Thermal"
+    },
+    "Location": {
+        "PostalAddress": {
+            "Country": "US",
+            "Territory": "OR",
+            "City": "Portland",
+            "Street": "1001 SW 5th Avenue",
+            "HouseNumber": 1100,
+            "Name": "Distributed Management Task Force, Inc.",
+            "PostalCode": "97204"
+        },
+        "Placement": {
+            "Row": "North",
+            "Rack": "WEB43",
+            "RackOffsetUnits": "EIA_310",
+            "RackOffset": 12
+        }
+    },
+    "Status": {
+        "State": "Enabled",
+        "Health": "OK"
+    },
+    "Links": {
+        "ComputerSystems": [
+            {
+                "@odata.id": "/redfish/v1/Systems/11111111-1111-1111-1111-111111111111"
+            },
+            
+            {
+                "@odata.id": "/redfish/v1/Systems/11111111-1111-1111-1111-111111111113"
+            },
+            
+            {
+                "@odata.id": "/redfish/v1/Systems/11111111-1111-1111-1111-111111111110"
+            },
+            
+            {
+                "@odata.id": "/redfish/v1/Systems/11111111-1111-1111-1111-111111111114"
+            },
+            
+            {
+                "@odata.id": "/redfish/v1/Systems/33333333-3333-3333-3333-333333333333"
+            },
+            
+            {
+                "@odata.id": "/redfish/v1/Systems/22222222-2222-2222-2222-222222222222"
+            },
+            
+            {
+                "@odata.id": "/redfish/v1/Systems/11111111-1111-1111-1111-111111111112"
+            }
+            ],
+        
+        "Storage": [
+            {
+                "@odata.id": "/redfish/v1/Systems/da69abcc-dae0-4913-9a7b-d344043097c0/Storage/1"
+            }
+            ],
+        
+        "Drives": [
+            {
+                "@odata.id": "/redfish/v1/Systems/da69abcc-dae0-4913-9a7b-d344043097c0/Storage/1/Drives/32ADF365C6C1B7BD"
+            }
+            ],
+        "ManagedBy": [
+            {
+                "@odata.id": "/redfish/v1/Managers/11111111-1111-1111-1111-111111111110"
+            }
+            ],
+        "ManagersInChassis": [
+            {
+                "@odata.id": "/redfish/v1/Managers/11111111-1111-1111-1111-111111111110"
+            },
+            
+            {
+                "@odata.id": "/redfish/v1/Managers/11111111-1111-1111-1111-111111111111"
+            },
+            
+            {
+                "@odata.id": "/redfish/v1/Managers/11111111-1111-1111-1111-111111111112"
+            },
+            
+            {
+                "@odata.id": "/redfish/v1/Managers/11111111-1111-1111-1111-111111111113"
+            },
+            
+            {
+                "@odata.id": "/redfish/v1/Managers/11111111-1111-1111-1111-111111111114"
+            },
+            
+            {
+                "@odata.id": "/redfish/v1/Managers/22222222-2222-2222-2222-222222222222"
+            },
+            
+            {
+                "@odata.id": "/redfish/v1/Managers/33333333-3333-3333-3333-333333333333"
+            }
+            ]
+    },
+    "@odata.context": "/redfish/v1/$metadata#Chassis.Chassis",
+    "@odata.id": "/redfish/v1/Chassis/48295861-2522-3561-6729-621118518810",
+    "@Redfish.Copyright": "Copyright 2014-2017 Distributed Management Task Force, Inc. (DMTF). For the full DMTF copyright policy, see http://www.dmtf.org/about/policies/copyright."
+}

@@ -1,0 +1,12 @@
+FROM registry.hub.docker.com/library/python:3.12
+
+RUN apt update && \
+  apt install -y libvirt-dev iproute2 && \
+  apt clean
+
+COPY . /tmp/sushy-tools/
+RUN pip3 install --no-cache-dir /tmp/sushy-tools/ libvirt-python && \
+  rm -rf /tmp/sushy-tools/
+
+COPY .ailocal/sushy-emulator.conf /etc/sushy/sushy-emulator.conf
+CMD /usr/local/bin/sushy-emulator --config /etc/sushy/sushy-emulator.conf --debug

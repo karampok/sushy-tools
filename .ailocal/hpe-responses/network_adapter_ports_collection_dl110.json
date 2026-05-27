@@ -1,0 +1,22 @@
+{
+  "@odata.etag": "W/\"4D44B9DB\"",
+  "@odata.id": "/redfish/v1/Chassis/1/NetworkAdapters/DE080000/Ports",
+  "@odata.type": "#PortCollection.PortCollection",
+  "@odata.context": "/redfish/v1/$metadata#PortCollection.PortCollection",
+  "Members": [
+    {
+      "@odata.id": "/redfish/v1/Chassis/1/NetworkAdapters/DE080000/Ports/0"
+    },
+    {
+      "@odata.id": "/redfish/v1/Chassis/1/NetworkAdapters/DE080000/Ports/1"
+    },
+    {
+      "@odata.id": "/redfish/v1/Chassis/1/NetworkAdapters/DE080000/Ports/2"
+    },
+    {
+      "@odata.id": "/redfish/v1/Chassis/1/NetworkAdapters/DE080000/Ports/3"
+    }
+  ],
+  "Members@odata.count": 4,
+  "Name": "Ports"
+}

@@ -1,0 +1,16 @@
+{
+    "@odata.type": "#EthernetInterfaceCollection.EthernetInterfaceCollection",
+    "Name": "Ethernet Interface Collection",
+    "Description": "Virtual NICs",
+    "Members@odata.count": 1,
+    "Members": [
+        
+                {
+                    "@odata.id": "/redfish/v1/Systems/22222222-2222-2222-2222-222222222222/EthernetInterfaces/aa:bb:cc:dd:ee:01"
+                }
+        
+    ],
+    "Oem": {},
+    "@odata.context": "/redfish/v1/$metadata#EthernetInterfaceCollection.EthernetInterfaceCollection",
+    "@odata.id": "/redfish/v1/Systems/22222222-2222-2222-2222-222222222222/EthernetInterfaces"
+}

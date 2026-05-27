@@ -1,0 +1,109 @@
+{
+  "@odata.etag": "W/\"47B35190\"",
+  "@odata.id": "/redfish/v1/Chassis/1/NetworkAdapters/DE080000",
+  "@odata.type": "#NetworkAdapter.v1_9_0.NetworkAdapter",
+  "@odata.context": "/redfish/v1/$metadata#NetworkAdapter.NetworkAdapter",
+  "Id": "DE080000",
+  "@Redfish.Settings": {
+    "SettingsObject": {
+      "@odata.id": "/redfish/v1/Chassis/1/NetworkAdapters/DE080000/Settings"
+    },
+    "@odata.type": "#Settings.v1_3_3.Settings",
+    "SupportedApplyTimes": [
+      "OnReset"
+    ]
+  },
+  "Actions": {
+    "#NetworkAdapter.ResetSettingsToDefault": {
+      "target": "/redfish/v1/Chassis/1/NetworkAdapters/DE080000/Actions/NetworkAdapter.ResetSettingsToDefault",
+      "title": "#NetworkAdapter.ResetSettingsToDefault"
+    }
+  },
+  "Controllers": [
+    {
+      "ControllerCapabilities": {
+        "DataCenterBridging": {
+          "Capable": true
+        },
+        "NetworkDeviceFunctionCount": 4,
+        "NetworkPortCount": 4,
+        "VirtualizationOffload": {
+          "SRIOV": {
+            "SRIOVVEPACapable": true
+          },
+          "VirtualFunction": {
+            "DeviceMaxCount": 256,
+            "MinAssignmentGroupSize": 1,
+            "NetworkPortMaxCount": 256
+          }
+        },
+        "NPAR": {
+          "NparCapable": false
+        }
+      },
+      "FirmwarePackageVersion": "4.71 (0x8002003A)",
+      "Links": {
+        "NetworkDeviceFunctions": [
+          {
+            "@odata.id": "/redfish/v1/Chassis/1/NetworkAdapters/DE080000/NetworkDeviceFunctions/0"
+          },
+          {
+            "@odata.id": "/redfish/v1/Chassis/1/NetworkAdapters/DE080000/NetworkDeviceFunctions/1"
+          },
+          {
+            "@odata.id": "/redfish/v1/Chassis/1/NetworkAdapters/DE080000/NetworkDeviceFunctions/2"
+          },
+          {
+            "@odata.id": "/redfish/v1/Chassis/1/NetworkAdapters/DE080000/NetworkDeviceFunctions/3"
+          }
+        ],
+        "Ports": [
+          {
+            "@odata.id": "/redfish/v1/Chassis/1/NetworkAdapters/DE080000/Ports/0"
+          },
+          {
+            "@odata.id": "/redfish/v1/Chassis/1/NetworkAdapters/DE080000/Ports/1"
+          },
+          {
+            "@odata.id": "/redfish/v1/Chassis/1/NetworkAdapters/DE080000/Ports/2"
+          },
+          {
+            "@odata.id": "/redfish/v1/Chassis/1/NetworkAdapters/DE080000/Ports/3"
+          }
+        ],
+        "Ports@odata.count": 4,
+        "PCIeDevices": [
+          {
+            "@odata.id": "/redfish/v1/Chassis/1/PCIeDevices/DE080000"
+          }
+        ]
+      },
+      "PCIeInterface": {
+        "LanesInUse": 16,
+        "MaxLanes": 16,
+        "MaxPCIeType": "Gen4",
+        "PCIeType": "Gen4"
+      }
+    }
+  ],
+  "LLDPEnabled": true,
+  "Manufacturer": "Intel Corp.",
+  "Model": "Intel(R) Ethernet Network Adapter E810-XXVDA4T",
+  "Name": "E810 Network Adapter Current Setting",
+  "NetworkDeviceFunctions": {
+    "@odata.id": "/redfish/v1/Chassis/1/NetworkAdapters/DE080000/NetworkDeviceFunctions"
+  },
+  "Ports": {
+    "@odata.id": "/redfish/v1/Chassis/1/NetworkAdapters/DE080000/Ports"
+  },
+  "PartNumber": "P41638-001",
+  "SKU": "Intel(R) Ethernet Network Adapter E810-XXVDA4T",
+  "SerialNumber": "507C6F4B9A28",
+  "Metrics": {
+    "@odata.id": "/redfish/v1/Chassis/1/NetworkAdapters/DE080000/Metrics"
+  },
+  "Status": {
+    "State": "Enabled",
+    "HealthRollup": "OK"
+  }
+}
