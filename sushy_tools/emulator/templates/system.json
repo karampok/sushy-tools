@@ -16,7 +16,7 @@
     {%- endif %}
     "Boot": {
         {%- if boot_source_target %}
-        "BootSourceOverrideEnabled": "Continuous",
+        "BootSourceOverrideEnabled": {{ boot_source_enabled|default("Continuous")|string|tojson }},
         "BootSourceOverrideTarget": {{ boot_source_target|string|tojson }},
         "BootSourceOverrideTarget@Redfish.AllowableValues": [
             "Pxe",
@@ -39,7 +39,7 @@
         ]
         {%- endif %}
         {%- else %}
-        "BootSourceOverrideEnabled": "Continuous"
+        "BootSourceOverrideEnabled": {{ boot_source_enabled|default("Continuous")|string|tojson }}
         {%- endif %}
     },
     {%- if feature_set == "full" %}

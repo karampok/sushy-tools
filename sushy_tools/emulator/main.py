@@ -20,6 +20,7 @@ import os
 import signal
 import ssl
 import sys
+import threading
 
 import flask
 from werkzeug import exceptions as wz_exc
@@ -45,6 +46,87 @@ from sushy_tools import error
 
 
 _BIOS_REGISTRY_TYPES = None
+
+# system UUID -> original boot device to revert to after one boot cycle
+_boot_once_targets = {}
+
+try:
+    import libvirt as _libvirt
+    _libvirt_available = True
+except ImportError:
+    _libvirt_available = False
+
+
+def _start_boot_once_watcher(uri):
+    """Background thread watching for guest-initiated reboots.
+
+    Registers for libvirt VIR_DOMAIN_EVENT_ID_REBOOT events. When a
+    guest with boot-once pending reboots itself, we intercept: destroy
+    the VM, eject media (which reverts boot device to HDD), then cold
+    boot. The VM comes back up booting from disk.
+    """
+    if not _libvirt_available:
+        return
+
+    _libvirt.virEventRegisterDefaultImpl()
+
+    def _event_loop():
+        while True:
+            _libvirt.virEventRunDefaultImpl()
+
+    def _on_reboot(conn, domain, opaque):
+        uuid_str = domain.UUIDString()
+        original = _boot_once_targets.pop(uuid_str, None)
+        if not original:
+            return
+
+        name = domain.name()
+        try:
+            domain.destroy()
+
+            app.systems.set_boot_image(uuid_str, 'Cd', boot_image=None)
+
+            try:
+                app.vmedia.eject_image(
+                    app.managers.get_managers_for_system(uuid_str)[0],
+                    'Cd')
+            except Exception:
+                pass
+
+            restarted = False
+            with libvirtdriver.libvirt_open(uri) as c:
+                d = c.lookupByUUIDString(uuid_str)
+                d.create()
+                restarted = True
+
+            app.logger.info(
+                'Guest reboot detected for "%s", ejected media '
+                'and reverted boot to "%s"%s',
+                name, original,
+                ', VM restarted' if restarted else '')
+
+        except Exception as e:
+            app.logger.error(
+                'Failed boot-once revert on guest reboot '
+                'for "%s": %s', name, e)
+
+    try:
+        event_conn = _libvirt.open(uri)
+        event_conn.domainEventRegisterAny(
+            None,
+            _libvirt.VIR_DOMAIN_EVENT_ID_REBOOT,
+            _on_reboot,
+            None)
+        event_conn.setKeepAlive(5, 3)
+    except Exception as e:
+        app.logger.warning(
+            'Could not start boot-once watcher: %s', e)
+        return
+
+    t = threading.Thread(target=_event_loop, daemon=True,
+                         name='boot-once-watcher')
+    t.start()
+    app.logger.info('Boot-once watcher started for %s', uri)
 
 
 def _get_bios_registry_types():
@@ -592,6 +674,8 @@ def system_resource(identity):
                 app.systems.get_simple_storage_collection),
             total_cpus=try_get(app.systems.get_total_cpus),
             boot_source_target=app.systems.get_boot_device(identity),
+            boot_source_enabled=('Once' if uuid in _boot_once_targets
+                                 else 'Continuous'),
             boot_source_mode=try_get(app.systems.get_boot_mode),
             uefi_mode=(try_get(app.systems.get_boot_mode) == 'UEFI'),
             managers=app.managers.get_managers_for_system(identity),
@@ -614,6 +698,7 @@ def system_resource(identity):
             target = boot.get('BootSourceOverrideTarget')
             mode = boot.get('BootSourceOverrideMode')
             http_uri = boot.get('HttpBootUri')
+            override_enabled = boot.get('BootSourceOverrideEnabled')
 
             # Clean up HttpBootUri media if boot target changes
             # away from HTTP boot. This mimics real BMC behavior
@@ -698,14 +783,18 @@ def system_resource(identity):
                         identity, e)
 
             if target:
-                # NOTE(lucasagomes): In libvirt we always set the boot
-                # device frequency to "continuous" so, we are ignoring the
-                # BootSourceOverrideEnabled element here
+                if override_enabled == 'Once':
+                    current = app.systems.get_boot_device(identity)
+                    _boot_once_targets[uuid] = current or 'Hdd'
+                elif override_enabled == 'Continuous':
+                    _boot_once_targets.pop(uuid, None)
 
                 app.systems.set_boot_device(identity, target)
 
-                app.logger.info('Set boot device to "%s" for system "%s"',
-                                target, identity)
+                app.logger.info('Set boot device to "%s" (%s) for '
+                                'system "%s"', target,
+                                override_enabled or 'Continuous',
+                                identity)
 
             if mode:
                 app.systems.set_boot_mode(identity, mode)
@@ -820,6 +909,23 @@ def system_reset_action(identity):
             app.systems.apply_pending_versions(identity)
         except error.NotSupportedError:
             pass
+
+    if reset_type == 'ForceRestart':
+        uuid = app.systems.uuid(identity)
+        original = _boot_once_targets.pop(uuid, None)
+        if original:
+            try:
+                app.systems.set_boot_image(uuid, 'Cd', boot_image=None)
+            except error.NotSupportedError:
+                app.systems.set_boot_device(identity, original)
+            try:
+                mgr = app.managers.get_managers_for_system(uuid)[0]
+                app.vmedia.eject_image(mgr, 'Cd')
+            except Exception:
+                pass
+            app.logger.info(
+                'Boot-once revert for "%s" before ForceRestart, '
+                'reverted to "%s"', identity, original)
 
     app.systems.set_power_state(identity, reset_type)
 
@@ -1298,6 +1404,11 @@ def main():
 
     if args.storage_pool:
         app.config['SUSHY_EMULATOR_STORAGE_POOL'] = args.storage_pool
+
+    if not (args.os_cloud or args.ironic_cloud or args.fake):
+        libvirt_uri = app.config.get(
+            'SUSHY_EMULATOR_LIBVIRT_URI', 'qemu:///system')
+        _start_boot_once_watcher(libvirt_uri)
 
     ssl_context = None
     ssl_certificate = app.config.get('SUSHY_EMULATOR_SSL_CERT')
